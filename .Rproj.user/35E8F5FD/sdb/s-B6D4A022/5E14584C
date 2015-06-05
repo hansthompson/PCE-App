@@ -1,12 +1,12 @@
 {
-    "contents" : "library(ggplot2)\n#read in data\npce <- read.csv(\"data/power-cost-equalization-pce-data.csv\")\n\ndim(pce)\nsummary(pce)\n",
+    "contents" : "#install_github('quandl/R-package')\nlibrary(Quandl)\nlibrary(lubridate)\nlibrary(dplyr)\nlibrary(ggplot2)\nlibrary(ggmap)\n#read in data\npce <- read.csv(\"data/power-cost-equalization-pce-data.csv\")\n\npce<- select(pce, community_names, plant__name, plant__utility__name, plant__akeps_region__name,\n       year, month, intertied, residential_rate, pce_rate, pro_rata_rate,\n       effective_rate, fuel_price, fuel_used_gal, fuel_cost, nonfuel_expenses,\n       diesel_efficiency, diesel_kwh_generated, peak_consumption_kw, \n       residential_kwh_sold, commercial_kwh_sold, community_kwh_sold, \n       government_kwh_sold, unbilled_kwh, residential_customers, commercial_customers, \n       community_customers, government_customers, unbilled_customers, \n       other_customers)\n\npce$Date <- as.Date(ymd(paste(pce$year, pce$month, \"01\")))\n#Remove empty factor level for region\npce <- filter(pce, plant__akeps_region__name != \"\")\n\nsummarized_pce <- pce %>% \n    group_by(Date) %>%\n    summarize(sum = mean(fuel_price, na.rm = T))\n\nggplot(summarized_pce, aes(x = Date, y = sum)) + geom_line()\n\n#Diesel Fuel Refiner Wholesale Price, Monthly\n#https://www.quandl.com/data/EIA/STEO_DSWHUUS_M-Diesel-Fuel-Refiner-Wholesale-Price-Monthly \n#Only 50 requests a day. \nwholesale_fuel <- Quandl(\"EIA/STEO_DSWHUUS_M\")\n#add a day. This offsets the time of the price by a day. \nwholesale_fuel$Date <- as.Date(wholesale_fuel$Date + days(1) )\n#convert to dolllars from cents\nwholesale_fuel$Value <- wholesale_fuel$Value / 100\n\ncombined_price <- inner_join(wholesale_fuel, pce, by = \"Date\")\n\n#Patterns of price inflation by geographic region\nggplot(data = combined_price, aes(x = fuel_price, y = Value, color = plant__akeps_region__name, alpha = 0.1)) + geom_point() + coord_fixed() + geom_smooth(method = \"lm\")\n#distribution of cost difference from wholesale and fuel_price to village\nggplot(data = combined_price, aes(x = fuel_price - Value, fill = plant__akeps_region__name)) + geom_histogram()\n#change in difference over time\nggplot(data = combined_price, aes(x = factor(Date), y = fuel_price - Value)) + geom_boxplot() + facet_wrap(~plant__akeps_region__name) + ggtitle(\"From 07/2001-06/2013\")\n#\nggplot(data = combined_price, aes(x = ))",
     "created" : 1433458503017.000,
     "dirty" : false,
     "encoding" : "UTF-8",
     "folds" : "",
-    "hash" : "2771827977",
+    "hash" : "3757920663",
     "id" : "5E14584C",
-    "lastKnownWriteTime" : 1433462132,
+    "lastKnownWriteTime" : 1433530661,
     "path" : "C:/Users/chthompson/Desktop/PCE App/analysis.R",
     "project_path" : "analysis.R",
     "properties" : {
