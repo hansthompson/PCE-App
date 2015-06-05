@@ -1,0 +1,18 @@
+{
+    "contents" : "library(ggplot2)\n#read in data\npce <- read.csv(\"data/power-cost-equalization-pce-data.csv\")\n\ndim(pce)\nsummary(pce)\n",
+    "created" : 1433458503017.000,
+    "dirty" : false,
+    "encoding" : "UTF-8",
+    "folds" : "",
+    "hash" : "2771827977",
+    "id" : "5E14584C",
+    "lastKnownWriteTime" : 1433462132,
+    "path" : "C:/Users/chthompson/Desktop/PCE App/analysis.R",
+    "project_path" : "analysis.R",
+    "properties" : {
+        "tempName" : "Untitled1"
+    },
+    "relative_order" : 1,
+    "source_on_save" : false,
+    "type" : "r_source"
+}
