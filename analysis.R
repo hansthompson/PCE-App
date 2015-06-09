@@ -41,6 +41,7 @@ wholesale_fuel$Value <- wholesale_fuel$Value / 100
 combined_price <- inner_join(wholesale_fuel, pce, by = "Date")
 
 
+
 #Patterns of price inflation by geographic region
 ggplot(data = combined_price, aes(x = fuel_price, y = Value, color = plant__akeps_region__name, alpha = 0.1)) + geom_point() + coord_fixed() + geom_smooth(method = "lm")
 #distribution of cost difference from wholesale and fuel_price to village
@@ -48,8 +49,19 @@ ggplot(data = combined_price, aes(x = fuel_price - Value, fill = plant__akeps_re
 #change in difference over time
 ggplot(data = combined_price, aes(x = factor(Date), y = fuel_price - Value)) + geom_boxplot() + facet_wrap(~plant__akeps_region__name) + ggtitle("From 07/2001-06/2013")
 #show 
+black_bg<- theme(panel.background = element_rect(fill = "black"))
 most_recent <- filter(combined_price, Date == "2013-06-01")
-ggplot(data = most_recent, aes(x = lon, y = lat, label = community_names, color = fuel_price)) + geom_text() + scale_colour_gradientn(colours=rainbow(4))
-ggplot(data = most_recent, aes(x = lon, y = lat, label = community_names, color = fuel_cost) ) + geom_text() + scale_colour_gradientn(colours=rainbow(4))
-ggplot(data = most_recent, aes(x = lon, y = lat, label = community_names, color = residential_customers)) + geom_text() + scale_colour_gradientn(colours=rainbow(4))
+ggplot(data = most_recent, aes(x = lon, y = lat, label = community_names, color = fuel_price)) + geom_text() + scale_colour_gradientn(colours=rainbow(4)) + black_bg
+ggplot(data = most_recent, aes(x = lon, y = lat, label = community_names, color = fuel_cost) ) + geom_text() + scale_colour_gradientn(colours=rainbow(4)) + black_bg
+ggplot(data = most_recent, aes(x = lon, y = lat, label = community_names, color = fuel_price - Value)) + geom_text() + scale_colour_gradientn(colours=rainbow(4)) + black_bg
 mean(most_recent$fuel_used_gal, na.rm = T)
+
+ave_max <- combined_price %>%
+      mutate(month = month(Date)) %>%
+      filter(peak_consumption_kw < 1000) %>%
+      group_by(community_names, month) %>%
+      summarize(mean = mean(peak_consumption_kw / residential_customers))
+
+ggplot(ave_max, aes(x = month, y = mean, color = community_names)) + geom_line()
+
+
