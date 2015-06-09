@@ -66,4 +66,9 @@ ave_max <- combined_price %>%
 
 ggplot(ave_max, aes(x = month, y = mean, color = community_names)) + geom_line() + facet_wrap(~ plant__akeps_region__name)
 
+combined_price <- combined_price %>% mutate(beyond_cost = (fuel_price - Value)) %>% arrange(fuel_used_gal * beyond_cost)
+
+combined_price %>% select(community_names, Date, beyond_cost,  fuel_used_gal)
+
+ggplot(combined_price, aes(x = community_names, y = beyond_cost)) + geom_point()
 
