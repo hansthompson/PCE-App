@@ -56,12 +56,14 @@ ggplot(data = most_recent, aes(x = lon, y = lat, label = community_names, color 
 ggplot(data = most_recent, aes(x = lon, y = lat, label = community_names, color = fuel_price - Value)) + geom_text() + scale_colour_gradientn(colours=rainbow(4)) + black_bg
 mean(most_recent$fuel_used_gal, na.rm = T)
 
+
+hist(filter(combined_price, peak_consumption_kw < 1000))
 ave_max <- combined_price %>%
       mutate(month = month(Date)) %>%
       filter(peak_consumption_kw < 1000) %>%
       group_by(community_names, month) %>%
-      summarize(mean = mean(peak_consumption_kw / residential_customers))
+      summarise(mean = mean(peak_consumption_kw))
 
-ggplot(ave_max, aes(x = month, y = mean, color = community_names)) + geom_line()
+ggplot(ave_max, aes(x = month, y = mean, color = community_names)) + geom_line() + facet_wrap(~ plant__akeps_region__name)
 
 
